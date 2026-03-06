@@ -88,10 +88,10 @@ Each task can be accessed through GitHub Pages after deployment.
 Example:
 
 Task 1  
-https://username.github.io/Kodbud-Internship/task1
+https://KSTRamyaSri.github.io/Kodbud-Internship/task 1
 
 Task 2  
-https://username.github.io/Kodbud-Internship/task2
+https://KSTRamyaSri.github.io/Kodbud-Internship/task 2
 
 ---
 
