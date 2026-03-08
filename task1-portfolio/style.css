@@ -1,143 +1,38 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial;
+:root {
+    --primary: #00c853;
+    --bg-cream: #fdfaf1;
+    --card-white: #ffffff;
+    --text-main: #1a1a1a;
 }
 
-body{
-background:#f7f5ef;
-color:#333;
+body {
+    background-color: var(--bg-cream);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
 }
 
-/* HEADER */
+/* Nav */
+nav { display: flex; justify-content: space-between; padding: 20px 8%; align-items: center; }
+.nav-links { display: flex; list-style: none; gap: 30px; }
+.nav-links a { text-decoration: none; color: #333; font-weight: 600; font-size: 0.9rem; }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px 10%;
-background:white;
-}
+/* Hero - Video Match */
+.hero { display: flex; align-items: center; padding: 50px 8%; gap: 60px; }
+.hero-img { flex: 0 0 400px; border: 8px solid #2d3e2d; border-radius: 40px; overflow: hidden; }
+.hero-img img { width: 100%; display: block; }
+.hero-text h1 { font-size: 3.5rem; margin: 10px 0; }
+.hero-text span h1 { color: var(--primary); }
 
-nav a{
-margin:0 15px;
-text-decoration:none;
-color:#333;
-font-weight:500;
-}
+/* About & Grid */
+#about { padding: 50px 8%; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.card { background: var(--card-white); padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
-/* HERO */
+/* Skills - Bento Layout */
+.skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+.skill-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 
-.hero{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:80px 10%;
-}
-
-.hero-text{
-max-width:500px;
-}
-
-.hero-text h1{
-font-size:40px;
-margin-bottom:20px;
-}
-
-.hero-text button{
-padding:12px 25px;
-border:none;
-background:#5b3a29;
-color:white;
-border-radius:25px;
-cursor:pointer;
-}
-
-.hero-img img{
-width:300px;
-border-radius:10px;
-}
-
-/* FEATURES */
-
-.features{
-text-align:center;
-padding:80px 10%;
-}
-
-.feature-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:30px;
-margin-top:40px;
-}
-
-.card{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-/* TESTIMONIALS */
-
-.testimonials{
-background:#fff;
-padding:80px 10%;
-text-align:center;
-}
-
-.review-container{
-display:flex;
-gap:30px;
-margin-top:40px;
-}
-
-.review{
-background:#f7f5ef;
-padding:25px;
-border-radius:10px;
-}
-
-/* FOOTER */
-
-footer{
-background:#3a2419;
-color:white;
-text-align:center;
-padding:50px 10%;
-}
-
-footer input{
-padding:10px;
-width:250px;
-margin-top:10px;
-}
-
-footer button{
-padding:10px 20px;
-margin-left:10px;
-border:none;
-background:#e6b980;
-}
-
-@media(max-width:768px){
-
-.hero{
-flex-direction:column;
-text-align:center;
-}
-
-.feature-grid{
-grid-template-columns:1fr;
-}
-
-.review-container{
-flex-direction:column;
-}
-
-.hero-img img{
-margin-top:30px;
-}
-
+/* Contact - Emerald Footer */
+.contact-box { background: #1a2e1a; color: white; padding: 60px; border-radius: 30px; text-align: center; margin: 40px 8%; }
+.contact-link { color: var(--primary); text-decoration: none; }
