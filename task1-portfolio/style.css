@@ -1,38 +1,48 @@
 :root {
-    --primary: #00c853;
-    --bg-cream: #fdfaf1;
-    --card-white: #ffffff;
-    --text-main: #1a1a1a;
+    --bg-cream: #fbfaf5; /* Video background color */
+    --card-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    --primary-green: #00c853;
 }
 
-body {
-    background-color: var(--bg-cream);
-    color: var(--text-main);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    margin: 0;
+body { background-color: var(--bg-cream); }
+
+/* Bento Grid Alignment */
+.about-grid, .skills-container {
+    display: grid;
+    gap: 24px;
+    padding: 20px 0;
 }
 
-/* Nav */
-nav { display: flex; justify-content: space-between; padding: 20px 8%; align-items: center; }
-.nav-links { display: flex; list-style: none; gap: 30px; }
-.nav-links a { text-decoration: none; color: #333; font-weight: 600; font-size: 0.9rem; }
+.skills-container {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
 
-/* Hero - Video Match */
-.hero { display: flex; align-items: center; padding: 50px 8%; gap: 60px; }
-.hero-img { flex: 0 0 400px; border: 8px solid #2d3e2d; border-radius: 40px; overflow: hidden; }
-.hero-img img { width: 100%; display: block; }
-.hero-text h1 { font-size: 3.5rem; margin: 10px 0; }
-.hero-text span h1 { color: var(--primary); }
+/* Icons & Shadows */
+.skill-item {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    transition: transform 0.3s;
+}
 
-/* About & Grid */
-#about { padding: 50px 8%; }
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.card { background: var(--card-white); padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+.skill-item i { font-size: 1.8rem; color: #333; }
 
-/* Skills - Bento Layout */
-.skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
-.skill-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+/* Hero Image Shadow/Border */
+.hero-img {
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+    border-radius: 30px;
+    overflow: hidden;
+}
 
-/* Contact - Emerald Footer */
-.contact-box { background: #1a2e1a; color: white; padding: 60px; border-radius: 30px; text-align: center; margin: 40px 8%; }
-.contact-link { color: var(--primary); text-decoration: none; }
+/* Emerald Footer Box */
+.contact-box {
+    background: #064e3b;
+    border-radius: 40px;
+    padding: 80px 40px;
+}
