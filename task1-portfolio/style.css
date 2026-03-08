@@ -32,14 +32,59 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .hero-text p { color: #666; margin-bottom: 30px; max-width: 450px; }
 
 /* ABOUT & GRID - Bento Cards */
-#about, #projects { padding: 80px 0; max-width: 1200px; margin: 0 auto; }
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.card { background: var(--card-white); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
+/* About Me Section - Professional & Clean */
+.card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06); /* Subtle shadow */
+    margin-bottom: 30px;
+    border: 1px solid #f0f0f0;
+}
+
+.card h3 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+}
+
+.card p {
+    color: #4b5563; /* Soft text color for readability */
+    line-height: 1.8;
+}
 
 /* SKILLS - "Pill" Style Icons */
-.skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-top: 30px; }
-.skill-item { background: #fff; padding: 25px; border-radius: 20px; text-align: center; box-shadow: var(--shadow-soft); font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-.skill-item i { font-size: 1.8rem; color: #333; }
+/* Bento Grid for Skills */
+.skills-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.skill-item {
+    background: #ffffff;
+    padding: 25px 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column; /* Icon paina, text kinda */
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    border: 1px solid #f9f9f9;
+    transition: transform 0.3s ease;
+}
+
+.skill-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary); /* Hover green highlight */
+}
+
+.skill-item i {
+    font-size: 2rem; /* Icon size as per video */
+    color: #333;
+}
 
 /* CONTACT - Emerald Box */
 .contact-box { background: #064e3b; color: white; padding: 80px; border-radius: 40px; text-align: center; }
