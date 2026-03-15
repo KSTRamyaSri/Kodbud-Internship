@@ -61,7 +61,7 @@ A contact or job application form that includes:
 - Phone number
 - Message  
 with basic **JavaScript validation**.
-- **demo link** : https://KSTRamyaSri.github.io/kodbud-internship/task4-forms
+- **demo link** : https://KSTRamyaSri.github.io/Kodbud-Internship/task4-forms
 
 ### Task 5 – Blog Page
 A static blog layout displaying sample posts including:
