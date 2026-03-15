@@ -3,1514 +3,703 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Career Application Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink: #0d0d0d;
-    --paper: #f5f0e8;
-    --cream: #ede8dc;
-    --gold: #c9a84c;
-    --gold-light: #e8c96a;
-    --rust: #b94a2c;
-    --sage: #4a6741;
-    --muted: #7a736a;
-    --border: #d4cec4;
-    --white: #ffffff;
-    --shadow: 0 4px 24px rgba(13,13,13,0.10);
-    --shadow-lg: 0 12px 48px rgba(13,13,13,0.18);
-    --radius: 14px;
-    --step-active: var(--gold);
-    --step-done: var(--sage);
-    --step-idle: var(--border);
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'DM Sans', sans-serif;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--font-body);
-    background: var(--paper);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  /* Background texture */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
-      radial-gradient(circle at 85% 80%, rgba(74,103,65,0.07) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── HEADER ── */
-  header {
-    position: relative;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 28px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 10;
-    border-bottom: 3px solid var(--gold);
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: -3px; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-  }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .brand-icon {
-    width: 44px; height: 44px;
-    background: var(--gold);
-    border-radius: 10px;
-    display: grid; place-items: center;
-    font-family: var(--font-display);
-    font-size: 22px; font-weight: 900;
-    color: var(--ink);
-    flex-shrink: 0;
-  }
-  .brand-text { line-height: 1.2; }
-  .brand-name { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
-  .brand-sub { font-size: 11px; color: rgba(245,240,232,0.55); letter-spacing: 1.5px; text-transform: uppercase; }
-  .header-right { font-size: 12px; color: rgba(245,240,232,0.5); letter-spacing: 0.5px; }
-
-  /* ── STEP BAR ── */
-  .steps-wrap {
-    position: sticky; top: 0; z-index: 9;
-    background: var(--cream);
-    border-bottom: 1px solid var(--border);
-    padding: 0 40px;
-    box-shadow: 0 2px 12px rgba(13,13,13,0.06);
-  }
-  .steps {
-    display: flex;
-    align-items: stretch;
-    max-width: 900px;
-    margin: 0 auto;
-    gap: 0;
-  }
-  .step {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 18px 0;
-    cursor: default;
-    position: relative;
-    transition: opacity .25s;
-  }
-  .step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: 0; top: 50%;
-    transform: translateY(-50%);
-    width: 1px; height: 40%;
-    background: var(--border);
-  }
-  .step-num {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-size: 13px; font-weight: 600;
-    border: 2px solid var(--step-idle);
-    color: var(--muted);
-    background: var(--paper);
-    transition: all .3s ease;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-  .step.active .step-num {
-    border-color: var(--gold);
-    background: var(--gold);
-    color: var(--ink);
-    box-shadow: 0 0 0 4px rgba(201,168,76,0.18);
-  }
-  .step.done .step-num {
-    border-color: var(--sage);
-    background: var(--sage);
-    color: var(--white);
-  }
-  .step.done .step-num::after { content: '✓'; font-size: 15px; }
-  .step.done .step-num-inner { display: none; }
-  .step-info { overflow: hidden; }
-  .step-label { font-size: 12px; font-weight: 600; letter-spacing: 0.3px; color: var(--muted); transition: color .3s; white-space: nowrap; }
-  .step.active .step-label { color: var(--ink); }
-  .step-desc { font-size: 11px; color: var(--muted); opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* ── MAIN LAYOUT ── */
-  main {
-    position: relative; z-index: 1;
-    padding: 40px 40px 80px;
-    max-width: 980px;
-    margin: 0 auto;
-  }
-
-  /* ── PANEL ── */
-  .panel {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 32px 40px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    background: linear-gradient(135deg, #fefcf8 0%, #f9f4ec 100%);
-  }
-  .panel-title { font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1.2; color: var(--ink); }
-  .panel-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  .step-badge {
-    font-size: 11px; font-weight: 600;
-    background: var(--ink);
-    color: var(--gold);
-    padding: 4px 12px;
-    border-radius: 30px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    margin-top: 4px;
-  }
-  .panel-body { padding: 36px 40px; }
-
-  /* ── FORM GRID ── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-  .col-full { grid-column: 1 / -1; }
-  .col-third { grid-column: span 1; }
-
-  /* ── FIELD ── */
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field label {
-    font-size: 12px; font-weight: 600;
-    letter-spacing: 0.6px; text-transform: uppercase;
-    color: var(--muted);
-  }
-  .field label .req { color: var(--rust); margin-left: 2px; }
-  .field label .hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted); opacity: 0.7; font-size: 11px; }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="date"],
-  input[type="url"],
-  input[type="number"],
-  select,
-  textarea {
-    font-family: var(--font-body);
-    font-size: 14px;
-    padding: 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--paper);
-    color: var(--ink);
-    transition: border-color .2s, box-shadow .2s, background .2s;
-    outline: none;
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--gold);
-    background: var(--white);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.14);
-  }
-  input.error, select.error, textarea.error {
-    border-color: var(--rust) !important;
-    background: #fff8f7;
-    box-shadow: 0 0 0 3px rgba(185,74,44,0.10) !important;
-  }
-  textarea { resize: vertical; min-height: 100px; }
-  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a736a' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
-
-  .err-msg { font-size: 11.5px; color: var(--rust); font-weight: 500; display: flex; align-items: center; gap: 4px; min-height: 16px; }
-  .err-msg::before { content: '!'; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--rust); color: #fff; font-size: 9px; font-weight: 700; flex-shrink: 0; }
-
-  /* ── RADIO & CHECKBOX ── */
-  .radio-group, .check-group { display: flex; flex-wrap: wrap; gap: 10px; }
-  .radio-item, .check-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all .2s;
-    font-size: 13px;
-    user-select: none;
-    background: var(--paper);
-  }
-  .radio-item:hover, .check-item:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); }
-  .radio-item input, .check-item input { display: none; }
-  .radio-item.selected, .check-item.selected {
-    border-color: var(--gold);
-    background: rgba(201,168,76,0.12);
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .radio-item.selected::before, .check-item.selected::before { content: '✓ '; color: var(--sage); font-weight: 700; }
-
-  /* ── SKILLS TAGS ── */
-  .skills-wrap {
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 10px;
-    background: var(--paper);
-    min-height: 52px;
-    display: flex; flex-wrap: wrap; gap: 7px;
-    align-items: flex-start;
-    cursor: text;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  .skills-wrap:focus-within {
-    border-color: var(--gold);
-    background: var(--white);
-    box-shadow: 0 0 0 3px rgba(201,168,76,0.14);
-  }
-  .skills-wrap.error { border-color: var(--rust) !important; }
-  .skill-tag {
-    display: flex; align-items: center; gap: 5px;
-    background: var(--ink); color: var(--gold);
-    font-size: 12px; font-weight: 600;
-    padding: 4px 10px; border-radius: 20px;
-    letter-spacing: 0.3px;
-    animation: tagIn .15s ease;
-  }
-  @keyframes tagIn { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .skill-tag button { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 14px; line-height: 1; padding: 0; display: flex; align-items: center; opacity: 0.7; transition: opacity .15s; }
-  .skill-tag button:hover { opacity: 1; }
-  .skill-input { border: none; outline: none; background: transparent; font-family: var(--font-body); font-size: 14px; color: var(--ink); min-width: 120px; flex: 1; padding: 3px 4px; }
-  .skill-input::placeholder { color: var(--muted); }
-  .skill-suggestions {
-    position: absolute;
-    z-index: 100;
-    background: var(--white);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    max-height: 180px;
-    overflow-y: auto;
-    width: 100%;
-    top: calc(100% + 6px);
-    display: none;
-  }
-  .skill-suggestions.open { display: block; }
-  .skill-sug-item { padding: 9px 14px; font-size: 13px; cursor: pointer; transition: background .15s; }
-  .skill-sug-item:hover { background: rgba(201,168,76,0.12); }
-
-  /* ── FILE UPLOAD ── */
-  .file-drop {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    padding: 32px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .2s;
-    background: var(--paper);
-    position: relative;
-  }
-  .file-drop:hover, .file-drop.drag { border-color: var(--gold); background: rgba(201,168,76,0.06); }
-  .file-drop.error { border-color: var(--rust); }
-  .file-drop input { display: none; }
-  .file-drop-icon { font-size: 32px; line-height: 1; margin-bottom: 10px; }
-  .file-drop-text { font-size: 14px; color: var(--muted); }
-  .file-drop-text strong { color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-  .file-drop-rules { font-size: 11px; color: var(--muted); margin-top: 6px; opacity: 0.7; }
-  .file-chosen {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--paper);
-    border: 1.5px solid var(--sage);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-top: 10px;
-  }
-  .file-chosen-icon { font-size: 22px; }
-  .file-chosen-info { flex: 1; }
-  .file-chosen-name { font-size: 13px; font-weight: 600; color: var(--ink); }
-  .file-chosen-size { font-size: 11px; color: var(--muted); }
-  .file-chosen-remove { background: none; border: none; color: var(--rust); cursor: pointer; font-size: 18px; padding: 0; line-height: 1; }
-
-  /* ── PROGRESS BAR ── */
-  .progress-bar-wrap { margin-bottom: 28px; }
-  .progress-bar-track { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--sage), var(--gold)); border-radius: 4px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-  .progress-label { font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; justify-content: space-between; }
-
-  /* ── BUTTONS ── */
-  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border); }
-  .btn {
-    font-family: var(--font-body);
-    font-size: 14px; font-weight: 600;
-    padding: 13px 32px;
-    border-radius: 8px;
-    border: none; cursor: pointer;
-    transition: all .2s;
-    letter-spacing: 0.3px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .btn-primary {
-    background: var(--ink);
-    color: var(--gold);
-    box-shadow: 0 2px 10px rgba(13,13,13,0.15);
-  }
-  .btn-primary:hover { background: #1f1f1f; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(13,13,13,0.22); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-  }
-  .btn-secondary:hover { border-color: var(--muted); color: var(--ink); }
-  .btn-gold { background: var(--gold); color: var(--ink); }
-  .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
-  .btn-danger { background: #fff0ee; color: var(--rust); border: 1.5px solid #f5c0b4; }
-  .btn-danger:hover { background: #ffe0da; }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-  /* ── SECTION DIVIDER ── */
-  .section-title {
-    font-family: var(--font-display); font-size: 15px; font-weight: 700;
-    color: var(--ink);
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 22px;
-    margin-top: 10px;
-    display: flex; align-items: center; gap: 10px;
-    grid-column: 1 / -1;
-  }
-  .section-title span { font-family: var(--font-body); font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-
-  /* ── RANGE SLIDER ── */
-  .range-wrap { display: flex; align-items: center; gap: 14px; }
-  input[type="range"] {
-    flex: 1; -webkit-appearance: none; appearance: none;
-    height: 4px; border-radius: 4px;
-    background: linear-gradient(to right, var(--gold) 0%, var(--gold) var(--val, 50%), var(--border) var(--val, 50%));
-    outline: none; border: none; padding: 0; cursor: pointer;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--gold); border: 2px solid var(--ink);
-    cursor: pointer; transition: transform .15s;
-  }
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-  .range-val { min-width: 70px; font-size: 13px; font-weight: 600; color: var(--ink); text-align: right; }
-
-  /* ── REVIEW PAGE ── */
-  .review-section { margin-bottom: 32px; }
-  .review-section-title {
-    font-family: var(--font-display); font-size: 17px; font-weight: 700;
-    color: var(--ink);
-    padding-bottom: 10px; border-bottom: 2px solid var(--gold);
-    margin-bottom: 18px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .review-edit-btn { font-size: 12px; font-weight: 600; color: var(--gold); text-decoration: none; cursor: pointer; background: none; border: none; font-family: var(--font-body); display: flex; align-items: center; gap: 4px; }
-  .review-edit-btn:hover { color: var(--gold-light); }
-  .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .review-item {}
-  .review-item-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 3px; }
-  .review-item-value { font-size: 14px; color: var(--ink); font-weight: 500; word-break: break-all; }
-  .review-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
-  .review-tag { background: var(--ink); color: var(--gold); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
-
-  /* ── SUCCESS ── */
-  .success-wrap {
-    text-align: center;
-    padding: 60px 40px;
-    display: none;
-    animation: fadeUp .5s ease;
-  }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .success-icon { font-size: 64px; line-height: 1; margin-bottom: 20px; }
-  .success-title { font-family: var(--font-display); font-size: 32px; font-weight: 900; color: var(--ink); margin-bottom: 12px; }
-  .success-sub { font-size: 15px; color: var(--muted); max-width: 400px; margin: 0 auto; line-height: 1.6; }
-  .success-id { display: inline-block; margin-top: 20px; padding: 8px 20px; background: var(--ink); color: var(--gold); border-radius: 30px; font-size: 13px; font-weight: 600; letter-spacing: 1px; }
-
-  /* ── TOOLTIP ── */
-  .tooltip-wrap { position: relative; display: inline-flex; }
-  .tooltip-icon { width: 16px; height: 16px; border-radius: 50%; background: var(--border); color: var(--muted); font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: help; margin-left: 4px; }
-  .tooltip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); font-size: 11px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .2s; z-index: 50; }
-  .tooltip-wrap:hover .tooltip { opacity: 1; }
-
-  /* ── STEP ANIMATION ── */
-  .step-panel { animation: stepIn .35s cubic-bezier(.4,0,.2,1); }
-  @keyframes stepIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
-
-  /* ── CHAR COUNT ── */
-  .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 3px; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 700px) {
-    header { padding: 16px 18px; }
-    .steps-wrap { padding: 0 12px; }
-    .step-info { display: none; }
-    main { padding: 18px 12px 60px; }
-    .panel-header, .panel-body { padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .review-grid { grid-template-columns: 1fr; }
-    .btn-row { flex-direction: column-reverse; gap: 10px; }
-    .btn { width: 100%; justify-content: center; }
-  }
-</style>
+<title>Job Application — CareerPort</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="app">
 
-<header>
-  <div class="brand">
-    <div class="brand-icon">C</div>
-    <div class="brand-text">
-      <div class="brand-name">CareerPort</div>
-      <div class="brand-sub">Talent Acquisition Portal</div>
-    </div>
-  </div>
-  <div class="header-right">Application Portal &nbsp;·&nbsp; 2025</div>
-</header>
-
-<div class="steps-wrap">
-  <div class="steps" id="stepsBar">
-    <div class="step active" data-step="1">
-      <div class="step-num"><span class="step-num-inner">1</span></div>
-      <div class="step-info">
-        <div class="step-label">Personal</div>
-        <div class="step-desc">Basic info &amp; contact</div>
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-num"><span class="step-num-inner">2</span></div>
-      <div class="step-info">
-        <div class="step-label">Education</div>
-        <div class="step-desc">Academic background</div>
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-num"><span class="step-num-inner">3</span></div>
-      <div class="step-info">
-        <div class="step-label">Experience</div>
-        <div class="step-desc">Work &amp; skills</div>
-      </div>
-    </div>
-    <div class="step" data-step="4">
-      <div class="step-num"><span class="step-num-inner">4</span></div>
-      <div class="step-info">
-        <div class="step-label">Documents</div>
-        <div class="step-desc">Resume &amp; portfolio</div>
-      </div>
-    </div>
-    <div class="step" data-step="5">
-      <div class="step-num"><span class="step-num-inner">5</span></div>
-      <div class="step-info">
-        <div class="step-label">Review</div>
-        <div class="step-desc">Confirm &amp; submit</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<main>
-  <div class="panel" id="mainPanel">
-
-    <!-- ════ STEP 1: PERSONAL ════ -->
-    <div id="step1" class="step-panel">
-      <div class="panel-header">
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="sb-mark">C</div>
         <div>
-          <div class="panel-title">Personal Information</div>
-          <div class="panel-sub">Tell us about yourself. All fields marked <span style="color:var(--rust)">*</span> are required.</div>
-        </div>
-        <div class="step-badge">Step 1 / 5</div>
-      </div>
-      <div class="panel-body">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:20%"></div></div>
-          <div class="progress-label"><span>Progress</span><span>20%</span></div>
-        </div>
-
-        <div class="form-grid">
-
-          <div class="section-title">Name &amp; Identity <span>Legal name as on official documents</span></div>
-
-          <div class="field">
-            <label>First Name <span class="req">*</span></label>
-            <input type="text" id="firstName" placeholder="e.g. Rahul" maxlength="50">
-            <div class="err-msg" id="err-firstName"></div>
-          </div>
-          <div class="field">
-            <label>Last Name <span class="req">*</span></label>
-            <input type="text" id="lastName" placeholder="e.g. Sharma" maxlength="50">
-            <div class="err-msg" id="err-lastName"></div>
-          </div>
-          <div class="field">
-            <label>Date of Birth <span class="req">*</span> <span class="hint">(must be 18+)</span></label>
-            <input type="date" id="dob" max="">
-            <div class="err-msg" id="err-dob"></div>
-          </div>
-          <div class="field">
-            <label>Gender <span class="req">*</span></label>
-            <select id="gender">
-              <option value="">Select gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Non-binary</option>
-              <option>Prefer not to say</option>
-            </select>
-            <div class="err-msg" id="err-gender"></div>
-          </div>
-          <div class="field">
-            <label>Nationality <span class="req">*</span></label>
-            <select id="nationality">
-              <option value="">Select nationality</option>
-            </select>
-            <div class="err-msg" id="err-nationality"></div>
-          </div>
-          <div class="field">
-            <label>Marital Status</label>
-            <select id="marital">
-              <option value="">Select status</option>
-              <option>Single</option>
-              <option>Married</option>
-              <option>Divorced</option>
-              <option>Widowed</option>
-              <option>Prefer not to say</option>
-            </select>
-          </div>
-
-          <div class="section-title">Contact Details <span>We'll use this to reach you</span></div>
-
-          <div class="field">
-            <label>Email Address <span class="req">*</span></label>
-            <input type="email" id="email" placeholder="you@example.com" maxlength="100">
-            <div class="err-msg" id="err-email"></div>
-          </div>
-          <div class="field">
-            <label>Phone Number <span class="req">*</span> <span class="hint">(with country code)</span></label>
-            <input type="tel" id="phone" placeholder="+91 98765 43210" maxlength="20">
-            <div class="err-msg" id="err-phone"></div>
-          </div>
-          <div class="field">
-            <label>Alternate Phone</label>
-            <input type="tel" id="altPhone" placeholder="+91 98765 00000" maxlength="20">
-          </div>
-          <div class="field">
-            <label>LinkedIn Profile</label>
-            <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname">
-            <div class="err-msg" id="err-linkedin"></div>
-          </div>
-
-          <div class="section-title">Address <span>Current residential address</span></div>
-
-          <div class="field col-full">
-            <label>Street Address <span class="req">*</span></label>
-            <input type="text" id="street" placeholder="House No., Street, Area" maxlength="200">
-            <div class="err-msg" id="err-street"></div>
-          </div>
-          <div class="field">
-            <label>Country <span class="req">*</span></label>
-            <select id="country" onchange="populateStates()">
-              <option value="">Select country</option>
-            </select>
-            <div class="err-msg" id="err-country"></div>
-          </div>
-          <div class="field">
-            <label>State / Province <span class="req">*</span></label>
-            <select id="state" disabled>
-              <option value="">Select state</option>
-            </select>
-            <div class="err-msg" id="err-state"></div>
-          </div>
-          <div class="field">
-            <label>City <span class="req">*</span></label>
-            <input type="text" id="city" placeholder="City name" maxlength="100">
-            <div class="err-msg" id="err-city"></div>
-          </div>
-          <div class="field">
-            <label>PIN / ZIP Code <span class="req">*</span></label>
-            <input type="text" id="pincode" placeholder="e.g. 502103" maxlength="10">
-            <div class="err-msg" id="err-pincode"></div>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <span style="font-size:12px;color:var(--muted)">All data is encrypted &amp; secure 🔒</span>
-          <button class="btn btn-primary" onclick="nextStep(1)">Continue &rarr;</button>
+          <div class="sb-name">CareerPort</div>
+          <div class="sb-tagline">Talent Portal</div>
         </div>
       </div>
     </div>
 
-    <!-- ════ STEP 2: EDUCATION ════ -->
-    <div id="step2" class="step-panel" style="display:none">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Educational Background</div>
-          <div class="panel-sub">Share your academic qualifications and achievements.</div>
-        </div>
-        <div class="step-badge">Step 2 / 5</div>
+    <nav class="sb-nav" id="sbNav">
+      <div class="sb-item active" data-s="1">
+        <div class="sb-circle"><span class="sb-n">1</span></div>
+        <div class="sb-texts"><div class="sb-label">Personal Info</div><div class="sb-sub">Name · Contact · Address</div></div>
       </div>
-      <div class="panel-body">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:40%"></div></div>
-          <div class="progress-label"><span>Progress</span><span>40%</span></div>
+      <div class="sb-item" data-s="2">
+        <div class="sb-circle"><span class="sb-n">2</span></div>
+        <div class="sb-texts"><div class="sb-label">Education</div><div class="sb-sub">Degrees · Certifications</div></div>
+      </div>
+      <div class="sb-item" data-s="3">
+        <div class="sb-circle"><span class="sb-n">3</span></div>
+        <div class="sb-texts"><div class="sb-label">Experience</div><div class="sb-sub">Work history · Skills</div></div>
+      </div>
+      <div class="sb-item" data-s="4">
+        <div class="sb-circle"><span class="sb-n">4</span></div>
+        <div class="sb-texts"><div class="sb-label">Documents</div><div class="sb-sub">Resume · References</div></div>
+      </div>
+      <div class="sb-item" data-s="5">
+        <div class="sb-circle"><span class="sb-n">5</span></div>
+        <div class="sb-texts"><div class="sb-label">Review & Submit</div><div class="sb-sub">Confirm application</div></div>
+      </div>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="sb-prog-row">
+        <span>Progress</span>
+        <strong id="pPct">0%</strong>
+      </div>
+      <div class="sb-bar"><div class="sb-bar-fill" id="pFill" style="width:20%"></div></div>
+    </div>
+  </aside>
+
+  <!-- ══════ MAIN ══════ -->
+  <div class="main">
+
+    <div class="topbar">
+      <div class="tb-title" id="tbTitle">Personal Information</div>
+      <div class="tb-chip" id="tbChip">Step 1 of 5</div>
+    </div>
+
+    <div class="form-zone" id="fzone">
+
+      <!-- SUCCESS -->
+      <div class="suc" id="sucWrap">
+        <div class="suc-ring">✓</div>
+        <div class="suc-title">Application Submitted!</div>
+        <div class="suc-sub">Your application has been received. Our recruitment team will review your profile and get back to you within 5–7 business days.</div>
+        <div class="suc-id" id="appId"></div>
+        <div class="suc-acts">
+          <button class="btn btn-ghost" onclick="window.print()">🖨 Print</button>
+          <button class="btn btn-main" onclick="location.reload()">Apply for Another Role</button>
         </div>
+      </div>
 
-        <div class="form-grid">
+      <!-- ════════════════ STEP 1 ════════════════ -->
+      <div id="s1" class="sp on">
+        <div class="ebanner" id="eb1"><div class="eb-hd">⚠ Please correct the following</div><ul class="eb-ul" id="ebl1"></ul></div>
 
-          <div class="section-title">Highest Qualification</div>
-
-          <div class="field">
-            <label>Highest Degree <span class="req">*</span></label>
-            <select id="degree">
-              <option value="">Select degree</option>
-              <option>High School / 12th</option>
-              <option>Diploma</option>
-              <option>Bachelor's (B.Tech / B.E / B.Sc / BA / B.Com)</option>
-              <option>Master's (M.Tech / M.E / M.Sc / MA / M.Com / MBA)</option>
-              <option>Ph.D / Doctorate</option>
-              <option>Other</option>
-            </select>
-            <div class="err-msg" id="err-degree"></div>
-          </div>
-          <div class="field">
-            <label>Field of Study <span class="req">*</span></label>
-            <input type="text" id="field" placeholder="e.g. Computer Science, Mechanical Engg." maxlength="100">
-            <div class="err-msg" id="err-field"></div>
-          </div>
-          <div class="field">
-            <label>University / Institution <span class="req">*</span></label>
-            <input type="text" id="university" placeholder="Full name of institution" maxlength="150">
-            <div class="err-msg" id="err-university"></div>
-          </div>
-          <div class="field">
-            <label>Year of Passing <span class="req">*</span></label>
-            <select id="gradYear">
-              <option value="">Select year</option>
-            </select>
-            <div class="err-msg" id="err-gradYear"></div>
-          </div>
-          <div class="field">
-            <label>Percentage / CGPA <span class="req">*</span></label>
-            <input type="text" id="gpa" placeholder="e.g. 8.5 CGPA or 85%" maxlength="20">
-            <div class="err-msg" id="err-gpa"></div>
-          </div>
-          <div class="field">
-            <label>Grading System <span class="req">*</span></label>
-            <select id="gradeType">
-              <option value="">Select</option>
-              <option>Percentage (%)</option>
-              <option>CGPA (out of 10)</option>
-              <option>CGPA (out of 4)</option>
-              <option>Grade (A/B/C...)</option>
-            </select>
-            <div class="err-msg" id="err-gradeType"></div>
-          </div>
-
-          <div class="section-title">Certifications &amp; Courses <span>optional but adds value</span></div>
-
-          <div class="field col-full">
-            <label>Certifications <span class="hint">(comma-separated)</span></label>
-            <input type="text" id="certs" placeholder="e.g. AWS Solutions Architect, PMP, Google Analytics" maxlength="300">
-          </div>
-          <div class="field col-full">
-            <label>Online Courses / Bootcamps <span class="hint">(comma-separated)</span></label>
-            <input type="text" id="courses" placeholder="e.g. Full Stack Web Dev (Udemy), Data Science (Coursera)" maxlength="300">
-          </div>
-
-          <div class="section-title">Language Proficiency</div>
-
-          <div class="field col-full">
-            <label>Languages Known <span class="req">*</span> <span class="hint">(select all that apply)</span></label>
-            <div class="check-group" id="langGroup" style="margin-top:4px">
-              <label class="check-item"><input type="checkbox" value="English"> English</label>
-              <label class="check-item"><input type="checkbox" value="Hindi"> Hindi</label>
-              <label class="check-item"><input type="checkbox" value="Telugu"> Telugu</label>
-              <label class="check-item"><input type="checkbox" value="Tamil"> Tamil</label>
-              <label class="check-item"><input type="checkbox" value="Kannada"> Kannada</label>
-              <label class="check-item"><input type="checkbox" value="Malayalam"> Malayalam</label>
-              <label class="check-item"><input type="checkbox" value="French"> French</label>
-              <label class="check-item"><input type="checkbox" value="German"> German</label>
-              <label class="check-item"><input type="checkbox" value="Spanish"> Spanish</label>
-              <label class="check-item"><input type="checkbox" value="Mandarin"> Mandarin</label>
+        <!-- Card: Identity -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">👤</div>
+            <div class="card-header-text">
+              <div class="card-title">Identity</div>
+              <div class="card-subtitle">Legal name as on official documents</div>
             </div>
-            <div class="err-msg" id="err-langs"></div>
           </div>
-
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Identity</div><div class="sh-sub">Legal name as on official documents</div></div>
+            <div class="fg">
+              <div class="field" id="fw-firstName">
+                <div class="fl">First Name <span class="req">*</span></div>
+                <input class="fi" id="firstName" type="text" placeholder="e.g. Rahul" maxlength="50"
+                  oninput="onlyLetters(this);live(this,'firstName')" onblur="blr(this,'firstName')">
+                <div class="emsg" id="em-firstName"><span class="ei">!</span><span id="et-firstName"></span></div>
+                <div class="vmsg">✓ Looks good</div>
+              </div>
+              <div class="field" id="fw-lastName">
+                <div class="fl">Last Name <span class="req">*</span></div>
+                <input class="fi" id="lastName" type="text" placeholder="e.g. Sharma" maxlength="50"
+                  oninput="onlyLetters(this);live(this,'lastName')" onblur="blr(this,'lastName')">
+                <div class="emsg" id="em-lastName"><span class="ei">!</span><span id="et-lastName"></span></div>
+                <div class="vmsg">✓ Looks good</div>
+              </div>
+              <div class="field" id="fw-dob">
+                <div class="fl">Date of Birth <span class="req">*</span> <span class="hint">(18+ only)</span></div>
+                <input class="fi" id="dob" type="date" onchange="live(this,'dob');blr(this,'dob')">
+                <div class="emsg" id="em-dob"><span class="ei">!</span><span id="et-dob"></span></div>
+                <div class="vmsg">✓ Age verified</div>
+              </div>
+              <div class="field" id="fw-gender">
+                <div class="fl">Gender <span class="req">*</span></div>
+                <select class="fi" id="gender" onchange="live(this,'gender');blr(this,'gender')">
+                  <option value="">Select gender</option>
+                  <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+                </select>
+                <div class="emsg" id="em-gender"><span class="ei">!</span><span id="et-gender"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-nationality">
+                <div class="fl">Nationality <span class="req">*</span></div>
+                <select class="fi" id="nationality" onchange="live(this,'nationality');blr(this,'nationality')">
+                  <option value="">Select nationality</option>
+                </select>
+                <div class="emsg" id="em-nationality"><span class="ei">!</span><span id="et-nationality"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field">
+                <div class="fl">Marital Status <span class="hint">(optional)</span></div>
+                <select class="fi" id="marital">
+                  <option value="">Select (optional)</option>
+                  <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option><option>Prefer not to say</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevStep(2)">&larr; Back</button>
-          <button class="btn btn-primary" onclick="nextStep(2)">Continue &rarr;</button>
+        <!-- Card: Contact Details -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">📬</div>
+            <div class="card-header-text">
+              <div class="card-title">Contact Details</div>
+              <div class="card-subtitle">We'll reach you on these</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Contact Details</div><div class="sh-sub">We'll reach you on these</div></div>
+            <div class="fg">
+              <div class="field" id="fw-email">
+                <div class="fl">Email Address <span class="req">*</span></div>
+                <input class="fi" id="email" type="email" placeholder="you@example.com" maxlength="100"
+                  oninput="live(this,'email')" onblur="blr(this,'email')">
+                <div class="emsg" id="em-email"><span class="ei">!</span><span id="et-email"></span></div>
+                <div class="vmsg">✓ Valid email</div>
+              </div>
+              <div class="field" id="fw-phone">
+                <div class="fl">Phone Number <span class="req">*</span> <span class="hint">(10 digits, India)</span></div>
+                <input class="fi" id="phone" type="tel" placeholder="e.g. 9876543210" maxlength="10"
+                  oninput="onlyDigits(this,10);live(this,'phone')" onblur="blr(this,'phone')">
+                <div class="emsg" id="em-phone"><span class="ei">!</span><span id="et-phone"></span></div>
+                <div class="vmsg">✓ Valid number</div>
+              </div>
+              <div class="field">
+                <div class="fl">Alternate Phone <span class="hint">(optional, 10 digits)</span></div>
+                <input class="fi" id="altPhone" type="tel" placeholder="e.g. 9123456789" maxlength="10"
+                  oninput="onlyDigits(this,10)">
+              </div>
+              <div class="field" id="fw-linkedin">
+                <div class="fl">LinkedIn URL <span class="hint">(optional)</span></div>
+                <input class="fi" id="linkedin" type="url" placeholder="https://linkedin.com/in/username"
+                  oninput="live(this,'linkedin')" onblur="blr(this,'linkedin')">
+                <div class="emsg" id="em-linkedin"><span class="ei">!</span><span id="et-linkedin"></span></div>
+                <div class="vmsg">✓ Valid URL</div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Card: Address -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon amber">🏠</div>
+            <div class="card-header-text">
+              <div class="card-title">Current Address</div>
+              <div class="card-subtitle">Residential address</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Current Address</div><div class="sh-sub">Residential address</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-street">
+                <div class="fl">Street Address <span class="req">*</span></div>
+                <input class="fi" id="street" type="text" placeholder="House / Flat No., Street, Area, Locality" maxlength="200"
+                  oninput="live(this,'street')" onblur="blr(this,'street')">
+                <div class="emsg" id="em-street"><span class="ei">!</span><span id="et-street"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field" id="fw-country">
+                <div class="fl">Country <span class="req">*</span></div>
+                <select class="fi" id="country" onchange="loadStates();live(this,'country');blr(this,'country')">
+                  <option value="">Select country</option>
+                </select>
+                <div class="emsg" id="em-country"><span class="ei">!</span><span id="et-country"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-state">
+                <div class="fl">State / Province <span class="req">*</span></div>
+                <select class="fi" id="state" disabled onchange="live(this,'state');blr(this,'state')">
+                  <option value="">Select country first</option>
+                </select>
+                <div class="emsg" id="em-state"><span class="ei">!</span><span id="et-state"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-city">
+                <div class="fl">City <span class="req">*</span></div>
+                <input class="fi" id="city" type="text" placeholder="City name" maxlength="100"
+                  oninput="live(this,'city')" onblur="blr(this,'city')">
+                <div class="emsg" id="em-city"><span class="ei">!</span><span id="et-city"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field" id="fw-pincode">
+                <div class="fl">PIN / ZIP Code <span class="req">*</span></div>
+                <input class="fi" id="pincode" type="text" placeholder="e.g. 502103" maxlength="10"
+                  oninput="live(this,'pincode')" onblur="blr(this,'pincode')">
+                <div class="emsg" id="em-pincode"><span class="ei">!</span><span id="et-pincode"></span></div>
+                <div class="vmsg">✓ Valid code</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════ STEP 2 ════════════════ -->
+      <div id="s2" class="sp">
+        <div class="ebanner" id="eb2"><div class="eb-hd">⚠ Please correct the following</div><ul class="eb-ul" id="ebl2"></ul></div>
+
+        <!-- Card: Highest Qualification -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">🎓</div>
+            <div class="card-header-text">
+              <div class="card-title">Highest Qualification</div>
+              <div class="card-subtitle">Your primary academic degree</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Highest Qualification</div></div>
+            <div class="fg">
+              <div class="field" id="fw-degree">
+                <div class="fl">Degree <span class="req">*</span></div>
+                <select class="fi" id="degree" onchange="live(this,'degree');blr(this,'degree')">
+                  <option value="">Select degree</option>
+                  <option>High School / 12th</option><option>Diploma</option>
+                  <option>Bachelor's (B.Tech / B.E / B.Sc / BA)</option>
+                  <option>Master's (M.Tech / MBA / M.Sc / MA)</option>
+                  <option>Ph.D / Doctorate</option><option>Other</option>
+                </select>
+                <div class="emsg" id="em-degree"><span class="ei">!</span><span id="et-degree"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-studyField">
+                <div class="fl">Field of Study <span class="req">*</span></div>
+                <input class="fi" id="studyField" type="text" placeholder="e.g. Computer Science, Mechanical Engg." maxlength="100"
+                  oninput="live(this,'studyField')" onblur="blr(this,'studyField')">
+                <div class="emsg" id="em-studyField"><span class="ei">!</span><span id="et-studyField"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field" id="fw-university">
+                <div class="fl">University / Institution <span class="req">*</span></div>
+                <input class="fi" id="university" type="text" placeholder="Full institution name" maxlength="150"
+                  oninput="live(this,'university')" onblur="blr(this,'university')">
+                <div class="emsg" id="em-university"><span class="ei">!</span><span id="et-university"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field" id="fw-gradYear">
+                <div class="fl">Year of Passing <span class="req">*</span></div>
+                <select class="fi" id="gradYear" onchange="live(this,'gradYear');blr(this,'gradYear')">
+                  <option value="">Select year</option>
+                </select>
+                <div class="emsg" id="em-gradYear"><span class="ei">!</span><span id="et-gradYear"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-gradeType">
+                <div class="fl">Grading System <span class="req">*</span></div>
+                <select class="fi" id="gradeType" onchange="live(this,'gradeType');blr(this,'gradeType')">
+                  <option value="">Select system</option>
+                  <option>Percentage (%)</option><option>CGPA (out of 10)</option>
+                  <option>CGPA (out of 4)</option><option>Grade (A/B/C…)</option>
+                </select>
+                <div class="emsg" id="em-gradeType"><span class="ei">!</span><span id="et-gradeType"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-gpa">
+                <div class="fl">Score / GPA <span class="req">*</span></div>
+                <input class="fi" id="gpa" type="text" placeholder="e.g. 8.5 CGPA or 85%" maxlength="20"
+                  oninput="live(this,'gpa')" onblur="blr(this,'gpa')">
+                <div class="emsg" id="em-gpa"><span class="ei">!</span><span id="et-gpa"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Certifications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">📜</div>
+            <div class="card-header-text">
+              <div class="card-title">Certifications &amp; Courses</div>
+              <div class="card-subtitle">Optional — adds value to your profile</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Certifications & Courses</div><div class="sh-sub">Optional</div></div>
+            <div class="fg">
+              <div class="field full">
+                <div class="fl">Certifications <span class="hint">(comma-separated)</span></div>
+                <input class="fi" id="certs" type="text" placeholder="e.g. AWS Solutions Architect, PMP, Google Analytics" maxlength="300">
+              </div>
+              <div class="field full">
+                <div class="fl">Online Courses <span class="hint">(comma-separated)</span></div>
+                <input class="fi" id="courses" type="text" placeholder="e.g. Full Stack Dev — Udemy, Data Science — Coursera" maxlength="300">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Languages -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon purple">🌐</div>
+            <div class="card-header-text">
+              <div class="card-title">Languages Known</div>
+              <div class="card-subtitle">Select all that apply</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Languages Known</div><div class="sh-sub">Select all that apply</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-langs">
+                <div class="fl">Languages <span class="req">*</span></div>
+                <div class="pills" id="pg-langs">
+                  <label class="pill"><input type="checkbox" value="English"> English</label>
+                  <label class="pill"><input type="checkbox" value="Hindi"> Hindi</label>
+                  <label class="pill"><input type="checkbox" value="Telugu"> Telugu</label>
+                  <label class="pill"><input type="checkbox" value="Tamil"> Tamil</label>
+                  <label class="pill"><input type="checkbox" value="Kannada"> Kannada</label>
+                  <label class="pill"><input type="checkbox" value="Malayalam"> Malayalam</label>
+                  <label class="pill"><input type="checkbox" value="French"> French</label>
+                  <label class="pill"><input type="checkbox" value="German"> German</label>
+                  <label class="pill"><input type="checkbox" value="Spanish"> Spanish</label>
+                  <label class="pill"><input type="checkbox" value="Mandarin"> Mandarin</label>
+                  <label class="pill"><input type="checkbox" value="Arabic"> Arabic</label>
+                  <label class="pill"><input type="checkbox" value="Japanese"> Japanese</label>
+                </div>
+                <div class="emsg" id="em-langs"><span class="ei">!</span><span id="et-langs"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  STEP 3 -->
+      <div id="s3" class="sp">
+        <div class="ebanner" id="eb3"><div class="eb-hd">⚠ Please correct the following</div><ul class="eb-ul" id="ebl3"></ul></div>
+
+        <!-- Card: Role Applied For -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">💼</div>
+            <div class="card-header-text">
+              <div class="card-title">Role Applied For</div>
+              <div class="card-subtitle">Position and employment preferences</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Role Applied For</div></div>
+            <div class="fg">
+              <div class="field" id="fw-jobTitle">
+                <div class="fl">Job Title Applied <span class="req">*</span></div>
+                <input class="fi" id="jobTitle" type="text" placeholder="e.g. Senior Software Engineer" maxlength="100"
+                  oninput="live(this,'jobTitle')" onblur="blr(this,'jobTitle')">
+                <div class="emsg" id="em-jobTitle"><span class="ei">!</span><span id="et-jobTitle"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field" id="fw-department">
+                <div class="fl">Department <span class="req">*</span></div>
+                <select class="fi" id="department" onchange="live(this,'department');blr(this,'department')">
+                  <option value="">Select department</option>
+                  <option>Engineering / Technology</option><option>Product Management</option>
+                  <option>Design / UX</option><option>Data Science / Analytics</option>
+                  <option>Marketing</option><option>Sales</option>
+                  <option>Human Resources</option><option>Finance / Accounts</option>
+                  <option>Operations</option><option>Legal / Compliance</option>
+                  <option>Customer Support</option><option>Other</option>
+                </select>
+                <div class="emsg" id="em-department"><span class="ei">!</span><span id="et-department"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field full" id="fw-empType">
+                <div class="fl">Employment Type <span class="req">*</span></div>
+                <div class="pills" id="pg-empType">
+                  <label class="pill"><input type="radio" name="empType" value="Full-time"> Full-time</label>
+                  <label class="pill"><input type="radio" name="empType" value="Part-time"> Part-time</label>
+                  <label class="pill"><input type="radio" name="empType" value="Contract"> Contract</label>
+                  <label class="pill"><input type="radio" name="empType" value="Internship"> Internship</label>
+                  <label class="pill"><input type="radio" name="empType" value="Freelance"> Freelance</label>
+                </div>
+                <div class="emsg" id="em-empType"><span class="ei">!</span><span id="et-empType"></span></div>
+              </div>
+              <div class="field full" id="fw-workMode">
+                <div class="fl">Work Mode Preference <span class="req">*</span></div>
+                <div class="pills" id="pg-workMode">
+                  <label class="pill"><input type="radio" name="workMode" value="On-site"> On-site</label>
+                  <label class="pill"><input type="radio" name="workMode" value="Remote"> Remote</label>
+                  <label class="pill"><input type="radio" name="workMode" value="Hybrid"> Hybrid</label>
+                </div>
+                <div class="emsg" id="em-workMode"><span class="ei">!</span><span id="et-workMode"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Work History -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon amber">🏢</div>
+            <div class="card-header-text">
+              <div class="card-title">Work History &amp; Compensation</div>
+              <div class="card-subtitle">Experience level and salary expectations</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Work History & Compensation</div></div>
+            <div class="fg">
+              <div class="field" id="fw-experience">
+                <div class="fl">Total Experience <span class="req">*</span></div>
+                <select class="fi" id="experience" onchange="live(this,'experience');blr(this,'experience')">
+                  <option value="">Select experience</option>
+                  <option>Fresher / 0 years</option><option>Less than 1 year</option>
+                  <option>1 – 2 years</option><option>2 – 4 years</option>
+                  <option>4 – 6 years</option><option>6 – 10 years</option>
+                  <option>10 – 15 years</option><option>15+ years</option>
+                </select>
+                <div class="emsg" id="em-experience"><span class="ei">!</span><span id="et-experience"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field" id="fw-noticePeriod">
+                <div class="fl">Notice Period <span class="req">*</span></div>
+                <select class="fi" id="noticePeriod" onchange="live(this,'noticePeriod');blr(this,'noticePeriod')">
+                  <option value="">Select notice period</option>
+                  <option>Immediate / Serving notice</option><option>15 days</option>
+                  <option>1 month</option><option>2 months</option>
+                  <option>3 months</option><option>More than 3 months</option>
+                </select>
+                <div class="emsg" id="em-noticePeriod"><span class="ei">!</span><span id="et-noticePeriod"></span></div>
+                <div class="vmsg">✓ Selected</div>
+              </div>
+              <div class="field">
+                <div class="fl">Current / Last Company <span class="hint">(optional)</span></div>
+                <input class="fi" id="currentCompany" type="text" placeholder="Company name" maxlength="100">
+              </div>
+              <div class="field">
+                <div class="fl">Current / Last Title <span class="hint">(optional)</span></div>
+                <input class="fi" id="currentTitle" type="text" placeholder="e.g. Software Engineer" maxlength="100">
+              </div>
+              <div class="field">
+                <div class="fl">Current CTC <span class="hint">(optional)</span></div>
+                <input class="fi" id="currentCTC" type="text" placeholder="e.g. ₹8,00,000 or $60,000" maxlength="30">
+              </div>
+              <div class="field" id="fw-expectedCTC">
+                <div class="fl">Expected CTC <span class="req">*</span></div>
+                <input class="fi" id="expectedCTC" type="text" placeholder="e.g. ₹12,00,000 or $80,000" maxlength="30"
+                  oninput="live(this,'expectedCTC')" onblur="blr(this,'expectedCTC')">
+                <div class="emsg" id="em-expectedCTC"><span class="ei">!</span><span id="et-expectedCTC"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Technical Skills -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon purple">⚡</div>
+            <div class="card-header-text">
+              <div class="card-title">Technical Skills</div>
+              <div class="card-subtitle">Type a skill and press Enter or comma to add (max 20)</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Technical Skills</div><div class="sh-sub">Type + Enter or comma to add (max 20)</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-skills" style="position:relative">
+                <div class="fl">Skills <span class="req">*</span></div>
+                <div class="sbox" id="sBox" onclick="document.getElementById('sInp').focus()">
+                  <input type="text" id="sInp" class="sinp" placeholder="e.g. JavaScript, Python, Figma…" autocomplete="off">
+                </div>
+                <div class="sdrop" id="sDrop"></div>
+                <div class="emsg" id="em-skills"><span class="ei">!</span><span id="et-skills"></span></div>
+              </div>
+              <div class="field full">
+                <div class="fl">Overall Proficiency</div>
+                <div class="rrow">
+                  <span class="rl">Beginner</span>
+                  <input type="range" id="profR" min="1" max="5" value="3" oninput="updProf(this)">
+                  <span class="rl">Expert</span>
+                  <div class="rbadge" id="profBadge">Intermediate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Cover Letter -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">✍️</div>
+            <div class="card-header-text">
+              <div class="card-title">Cover Letter</div>
+              <div class="card-subtitle">Minimum 50 characters — make it count</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Cover Letter</div><div class="sh-sub">Minimum 50 characters</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-coverLetter">
+                <div class="fl">Why should we hire you? <span class="req">*</span></div>
+                <textarea class="fi" id="coverLetter" placeholder="Describe your strengths, experience, and why you're the ideal candidate for this role…" maxlength="1000"
+                  oninput="updChar(this,1000,'cFill','cNum');live(this,'coverLetter')" onblur="blr(this,'coverLetter')"></textarea>
+                <div class="cbar">
+                  <div class="ctrack"><div class="cfill" id="cFill" style="width:0%"></div></div>
+                  <div class="cnum" id="cNum">0 / 1000</div>
+                </div>
+                <div class="emsg" id="em-coverLetter"><span class="ei">!</span><span id="et-coverLetter"></span></div>
+                <div class="vmsg">✓ Well written</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  STEP 4  -->
+      <div id="s4" class="sp">
+        <div class="ebanner" id="eb4"><div class="eb-hd">⚠ Please correct the following</div><ul class="eb-ul" id="ebl4"></ul></div>
+
+        <!-- Card: Resume Upload -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon blue">📄</div>
+            <div class="card-header-text">
+              <div class="card-title">Resume Upload</div>
+              <div class="card-subtitle">PDF, DOC, DOCX · Maximum 2 MB</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Resume Upload</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-resume">
+                <div class="fl">Resume / CV <span class="req">*</span> <span class="hint">(PDF, DOC, DOCX · max 2 MB)</span></div>
+                <div class="dzone" id="dz-r" onclick="document.getElementById('ri-r').click()"
+                  ondragover="dzO(event,'dz-r')" ondragleave="dzL('dz-r')" ondrop="dzD(event,'ri-r','dz-r','fp-r',2,'resume')">
+                  <input type="file" id="ri-r" accept=".pdf,.doc,.docx" onchange="dzS(this,'fp-r',2,'resume')">
+                  <div class="dz-ico">📄</div>
+                  <div class="dz-txt"><strong>Click to upload</strong> or drag &amp; drop your resume</div>
+                  <div class="dz-rul">PDF, DOC, DOCX · Maximum 2 MB</div>
+                </div>
+                <div id="fp-r"></div>
+                <div class="emsg" id="em-resume"><span class="ei">!</span><span id="et-resume"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Portfolio -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">🔗</div>
+            <div class="card-header-text">
+              <div class="card-title">Portfolio &amp; Online Presence</div>
+              <div class="card-subtitle">Optional — upload or share your links</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Portfolio</div><div class="sh-sub">Optional</div></div>
+            <div class="fg">
+              <div class="field full">
+                <div class="fl">Cover Letter File <span class="hint">(optional · PDF, TXT · max 1 MB)</span></div>
+                <div class="dzone" id="dz-c" onclick="document.getElementById('ri-c').click()"
+                  ondragover="dzO(event,'dz-c')" ondragleave="dzL('dz-c')" ondrop="dzD(event,'ri-c','dz-c','fp-c',1,'cover')">
+                  <input type="file" id="ri-c" accept=".pdf,.doc,.docx,.txt" onchange="dzS(this,'fp-c',1,'cover')">
+                  <div class="dz-ico">📝</div>
+                  <div class="dz-txt"><strong>Click to upload</strong> or drag &amp; drop</div>
+                  <div class="dz-rul">PDF, DOC, TXT · Maximum 1 MB</div>
+                </div>
+                <div id="fp-c"></div>
+              </div>
+              <div class="field" id="fw-portfolio">
+                <div class="fl">Portfolio / GitHub URL <span class="hint">(optional)</span></div>
+                <input class="fi" id="portfolio" type="url" placeholder="https://github.com/username"
+                  oninput="live(this,'portfolio')" onblur="blr(this,'portfolio')">
+                <div class="emsg" id="em-portfolio"><span class="ei">!</span><span id="et-portfolio"></span></div>
+                <div class="vmsg">✓ Valid URL</div>
+              </div>
+              <div class="field">
+                <div class="fl">Personal Website <span class="hint">(optional)</span></div>
+                <input class="fi" id="website" type="url" placeholder="https://yoursite.com">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Professional Reference -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon amber">🤝</div>
+            <div class="card-header-text">
+              <div class="card-title">Professional Reference</div>
+              <div class="card-subtitle">At least one required</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Professional Reference</div><div class="sh-sub">At least one required</div></div>
+            <div class="fg">
+              <div class="field" id="fw-ref1Name">
+                <div class="fl">Reference Name <span class="req">*</span></div>
+                <input class="fi" id="ref1Name" type="text" placeholder="Full name" maxlength="100"
+                  oninput="onlyLetters(this);live(this,'ref1Name')" onblur="blr(this,'ref1Name')">
+                <div class="emsg" id="em-ref1Name"><span class="ei">!</span><span id="et-ref1Name"></span></div>
+                <div class="vmsg">✓ Entered</div>
+              </div>
+              <div class="field">
+                <div class="fl">Designation <span class="hint">(optional)</span></div>
+                <input class="fi" id="ref1Title" type="text" placeholder="e.g. Engineering Manager" maxlength="100">
+              </div>
+              <div class="field" id="fw-ref1Email">
+                <div class="fl">Reference Email <span class="req">*</span></div>
+                <input class="fi" id="ref1Email" type="email" placeholder="reference@company.com" maxlength="100"
+                  oninput="live(this,'ref1Email')" onblur="blr(this,'ref1Email')">
+                <div class="emsg" id="em-ref1Email"><span class="ei">!</span><span id="et-ref1Email"></span></div>
+                <div class="vmsg">✓ Valid email</div>
+              </div>
+              <div class="field">
+                <div class="fl">Reference Phone <span class="hint">(optional, 10 digits)</span></div>
+                <input class="fi" id="ref1Phone" type="tel" placeholder="e.g. 9876500000" maxlength="10"
+                  oninput="onlyDigits(this,10)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Declarations -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">✅</div>
+            <div class="card-header-text">
+              <div class="card-title">Declarations</div>
+              <div class="card-subtitle">All three are required to proceed</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sec-head"><div class="sh-title">Declarations</div><div class="sh-sub">All three are required</div></div>
+            <div class="fg">
+              <div class="field full" id="fw-declarations">
+                <div class="pills" id="pg-declarations" style="flex-direction:column;align-items:stretch;gap:10px">
+                  <label class="pill" style="border-radius:10px;padding:13px 16px;font-size:13px;line-height:1.5"><input type="checkbox" value="accurate"> I certify that all information provided is accurate and truthful to the best of my knowledge.</label>
+                  <label class="pill" style="border-radius:10px;padding:13px 16px;font-size:13px;line-height:1.5"><input type="checkbox" value="privacy"> I have read and agree to the Privacy Policy and Terms of Service.</label>
+                  <label class="pill" style="border-radius:10px;padding:13px 16px;font-size:13px;line-height:1.5"><input type="checkbox" value="contact"> I consent to being contacted by the recruitment team via email and phone.</label>
+                </div>
+                <div class="emsg" id="em-declarations"><span class="ei">!</span><span id="et-declarations"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  STEP 5: REVIEW  -->
+      <div id="s5" class="sp">
+        <div id="rvContent"></div>
+        <div style="height:8px"></div>
+      </div>
+
+    </div><!-- /form-zone -->
+
+    <!-- ACTION BAR -->
+    <div class="action-bar" id="aBar">
+      <div class="ab-hint" id="aHint">🔒 Your data is safe and encrypted</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-back" id="btnBack" style="display:none" onclick="goPrev()">← Back</button>
+        <button class="btn btn-main" id="btnNext" onclick="goNext()">Continue →</button>
       </div>
     </div>
 
-    <!-- ════ STEP 3: EXPERIENCE & SKILLS ════ -->
-    <div id="step3" class="step-panel" style="display:none">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Experience &amp; Skills</div>
-          <div class="panel-sub">Your work history, technical skills, and professional preferences.</div>
-        </div>
-        <div class="step-badge">Step 3 / 5</div>
-      </div>
-      <div class="panel-body">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:60%"></div></div>
-          <div class="progress-label"><span>Progress</span><span>60%</span></div>
-        </div>
+  </div><!-- /main -->
+</div><!-- /app -->
 
-        <div class="form-grid">
-
-          <div class="section-title">Position Applied For</div>
-
-          <div class="field">
-            <label>Job Title Applied <span class="req">*</span></label>
-            <input type="text" id="jobTitle" placeholder="e.g. Senior Software Engineer" maxlength="100">
-            <div class="err-msg" id="err-jobTitle"></div>
-          </div>
-          <div class="field">
-            <label>Department <span class="req">*</span></label>
-            <select id="department">
-              <option value="">Select department</option>
-              <option>Engineering / Technology</option>
-              <option>Product Management</option>
-              <option>Design / UX</option>
-              <option>Data Science / Analytics</option>
-              <option>Marketing</option>
-              <option>Sales</option>
-              <option>Human Resources</option>
-              <option>Finance / Accounts</option>
-              <option>Operations</option>
-              <option>Legal / Compliance</option>
-              <option>Customer Support</option>
-              <option>Other</option>
-            </select>
-            <div class="err-msg" id="err-department"></div>
-          </div>
-          <div class="field">
-            <label>Employment Type <span class="req">*</span></label>
-            <div class="radio-group" id="empTypeGroup">
-              <label class="radio-item"><input type="radio" name="empType" value="Full-time"> Full-time</label>
-              <label class="radio-item"><input type="radio" name="empType" value="Part-time"> Part-time</label>
-              <label class="radio-item"><input type="radio" name="empType" value="Contract"> Contract</label>
-              <label class="radio-item"><input type="radio" name="empType" value="Internship"> Internship</label>
-              <label class="radio-item"><input type="radio" name="empType" value="Remote"> Remote</label>
-            </div>
-            <div class="err-msg" id="err-empType"></div>
-          </div>
-          <div class="field">
-            <label>Work Mode Preference <span class="req">*</span></label>
-            <div class="radio-group" id="workModeGroup">
-              <label class="radio-item"><input type="radio" name="workMode" value="On-site"> On-site</label>
-              <label class="radio-item"><input type="radio" name="workMode" value="Remote"> Remote</label>
-              <label class="radio-item"><input type="radio" name="workMode" value="Hybrid"> Hybrid</label>
-            </div>
-            <div class="err-msg" id="err-workMode"></div>
-          </div>
-
-          <div class="section-title">Work History</div>
-
-          <div class="field">
-            <label>Total Experience <span class="req">*</span></label>
-            <select id="experience">
-              <option value="">Select experience</option>
-              <option>Fresher / 0 years</option>
-              <option>Less than 1 year</option>
-              <option>1 – 2 years</option>
-              <option>2 – 4 years</option>
-              <option>4 – 6 years</option>
-              <option>6 – 10 years</option>
-              <option>10 – 15 years</option>
-              <option>15+ years</option>
-            </select>
-            <div class="err-msg" id="err-experience"></div>
-          </div>
-          <div class="field">
-            <label>Current / Last Company</label>
-            <input type="text" id="currentCompany" placeholder="Company name" maxlength="100">
-          </div>
-          <div class="field">
-            <label>Current / Last Job Title</label>
-            <input type="text" id="currentTitle" placeholder="e.g. Software Engineer" maxlength="100">
-          </div>
-          <div class="field">
-            <label>Notice Period <span class="req">*</span></label>
-            <select id="noticePeriod">
-              <option value="">Select notice period</option>
-              <option>Immediate / Serving notice</option>
-              <option>15 days</option>
-              <option>1 month</option>
-              <option>2 months</option>
-              <option>3 months</option>
-              <option>More than 3 months</option>
-            </select>
-            <div class="err-msg" id="err-noticePeriod"></div>
-          </div>
-
-          <div class="section-title">Compensation</div>
-
-          <div class="field">
-            <label>Current CTC / Salary <span class="hint">(per annum in INR / USD)</span></label>
-            <input type="text" id="currentCTC" placeholder="e.g. ₹8,00,000 or $60,000" maxlength="30">
-          </div>
-          <div class="field">
-            <label>Expected CTC / Salary <span class="req">*</span></label>
-            <input type="text" id="expectedCTC" placeholder="e.g. ₹12,00,000 or $80,000" maxlength="30">
-            <div class="err-msg" id="err-expectedCTC"></div>
-          </div>
-
-          <div class="section-title">Technical Skills</div>
-
-          <div class="field col-full" style="position:relative">
-            <label>Technical Skills <span class="req">*</span> <span class="hint">(type and press Enter or comma to add)</span></label>
-            <div class="skills-wrap" id="skillsWrap" onclick="document.getElementById('skillInput').focus()">
-              <input type="text" id="skillInput" class="skill-input" placeholder="e.g. JavaScript, Python, Figma…" autocomplete="off">
-            </div>
-            <div class="skill-suggestions" id="skillSuggestions"></div>
-            <div class="err-msg" id="err-skills"></div>
-          </div>
-
-          <div class="field col-full">
-            <label>Proficiency Level</label>
-            <div class="range-wrap">
-              <span style="font-size:12px;color:var(--muted);min-width:60px">Beginner</span>
-              <input type="range" id="proficiency" min="1" max="5" value="3" oninput="updateRange(this)" style="--val:60%">
-              <span style="font-size:12px;color:var(--muted);min-width:60px;text-align:right">Expert</span>
-              <div class="range-val" id="proficiencyVal">Intermediate</div>
-            </div>
-          </div>
-
-          <div class="field col-full">
-            <label>Cover Letter / Why should we hire you? <span class="req">*</span></label>
-            <textarea id="coverLetter" placeholder="Tell us about your passion, strengths, and why you're the ideal candidate for this role…" maxlength="1000" oninput="updateChar(this,'coverLetterCount',1000)"></textarea>
-            <div class="char-count"><span id="coverLetterCount">0</span> / 1000</div>
-            <div class="err-msg" id="err-coverLetter"></div>
-          </div>
-
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevStep(3)">&larr; Back</button>
-          <button class="btn btn-primary" onclick="nextStep(3)">Continue &rarr;</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ STEP 4: DOCUMENTS ════ -->
-    <div id="step4" class="step-panel" style="display:none">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Documents &amp; References</div>
-          <div class="panel-sub">Upload your resume and provide professional references.</div>
-        </div>
-        <div class="step-badge">Step 4 / 5</div>
-      </div>
-      <div class="panel-body">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:80%"></div></div>
-          <div class="progress-label"><span>Progress</span><span>80%</span></div>
-        </div>
-
-        <div class="form-grid">
-
-          <div class="section-title">Resume Upload</div>
-
-          <div class="field col-full">
-            <label>Resume / CV <span class="req">*</span></label>
-            <div class="file-drop" id="resumeDrop" onclick="document.getElementById('resumeInput').click()" ondragover="handleDragOver(event,'resumeDrop')" ondragleave="handleDragLeave(event,'resumeDrop')" ondrop="handleDrop(event,'resumeInput','resumeDrop','resumeInfo',2)">
-              <input type="file" id="resumeInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(this,'resumeInfo',2)">
-              <div class="file-drop-icon">📄</div>
-              <div class="file-drop-text"><strong>Click to upload</strong> or drag &amp; drop your resume</div>
-              <div class="file-drop-rules">PDF, DOC, DOCX · Max 2 MB</div>
-            </div>
-            <div id="resumeInfo"></div>
-            <div class="err-msg" id="err-resume"></div>
-          </div>
-
-          <div class="section-title">Portfolio &amp; Work Samples <span>optional</span></div>
-
-          <div class="field col-full">
-            <label>Cover Letter / Writing Sample <span class="hint">(optional)</span></label>
-            <div class="file-drop" id="coverDrop" onclick="document.getElementById('coverInput').click()" ondragover="handleDragOver(event,'coverDrop')" ondragleave="handleDragLeave(event,'coverDrop')" ondrop="handleDrop(event,'coverInput','coverDrop','coverInfo',1)">
-              <input type="file" id="coverInput" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(this,'coverInfo',1)">
-              <div class="file-drop-icon">📝</div>
-              <div class="file-drop-text"><strong>Click to upload</strong> or drag &amp; drop</div>
-              <div class="file-drop-rules">PDF, DOC, TXT · Max 1 MB</div>
-            </div>
-            <div id="coverInfo"></div>
-          </div>
-
-          <div class="field">
-            <label>Portfolio / GitHub URL</label>
-            <input type="url" id="portfolio" placeholder="https://github.com/yourusername">
-            <div class="err-msg" id="err-portfolio"></div>
-          </div>
-          <div class="field">
-            <label>Personal Website</label>
-            <input type="url" id="website" placeholder="https://yourwebsite.com">
-          </div>
-
-          <div class="section-title">Professional Reference <span>at least one</span></div>
-
-          <div class="field">
-            <label>Reference 1 — Name <span class="req">*</span></label>
-            <input type="text" id="ref1Name" placeholder="Full name" maxlength="100">
-            <div class="err-msg" id="err-ref1Name"></div>
-          </div>
-          <div class="field">
-            <label>Reference 1 — Designation</label>
-            <input type="text" id="ref1Title" placeholder="Job Title / Role" maxlength="100">
-          </div>
-          <div class="field">
-            <label>Reference 1 — Email <span class="req">*</span></label>
-            <input type="email" id="ref1Email" placeholder="reference@company.com" maxlength="100">
-            <div class="err-msg" id="err-ref1Email"></div>
-          </div>
-          <div class="field">
-            <label>Reference 1 — Phone</label>
-            <input type="tel" id="ref1Phone" placeholder="+91 00000 00000" maxlength="20">
-          </div>
-
-          <div class="section-title">Declarations <span>required to proceed</span></div>
-
-          <div class="field col-full">
-            <div class="check-group" id="declarationsGroup" style="flex-direction:column;gap:12px;align-items:flex-start">
-              <label class="check-item" style="border-radius:8px;padding:12px 16px;width:100%">
-                <input type="checkbox" value="accurate"> I certify that all information provided is accurate and truthful to the best of my knowledge.
-              </label>
-              <label class="check-item" style="border-radius:8px;padding:12px 16px;width:100%">
-                <input type="checkbox" value="privacy"> I have read and agree to the <u>Privacy Policy</u> and <u>Terms of Service</u>.
-              </label>
-              <label class="check-item" style="border-radius:8px;padding:12px 16px;width:100%">
-                <input type="checkbox" value="contact"> I consent to being contacted by the recruitment team via email and phone.
-              </label>
-            </div>
-            <div class="err-msg" id="err-declarations"></div>
-          </div>
-
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevStep(4)">&larr; Back</button>
-          <button class="btn btn-primary" onclick="nextStep(4)">Review Application &rarr;</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ STEP 5: REVIEW ════ -->
-    <div id="step5" class="step-panel" style="display:none">
-      <div class="panel-header">
-        <div>
-          <div class="panel-title">Review Your Application</div>
-          <div class="panel-sub">Check everything carefully before submitting. You can go back to edit any section.</div>
-        </div>
-        <div class="step-badge">Step 5 / 5</div>
-      </div>
-      <div class="panel-body">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:100%"></div></div>
-          <div class="progress-label"><span>Review complete</span><span>100% ✓</span></div>
-        </div>
-
-        <div id="reviewContent"></div>
-
-        <div class="btn-row">
-          <button class="btn btn-danger" onclick="prevStep(5)">&larr; Edit Application</button>
-          <button class="btn btn-gold" onclick="finalSubmit()" style="font-size:15px;padding:15px 40px">
-            🚀 &nbsp; Submit Application
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ SUCCESS ════ -->
-    <div class="success-wrap" id="successWrap">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Application Submitted!</div>
-      <div class="success-sub">Your job application has been received. Our recruitment team will review your profile and get back to you within 5–7 business days.</div>
-      <div class="success-id" id="appId"></div>
-      <div style="margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-secondary" onclick="window.print()">🖨️ &nbsp;Print Confirmation</button>
-        <button class="btn btn-primary" onclick="location.reload()">Apply for Another Role</button>
-      </div>
-    </div>
-
-  </div><!-- /panel -->
-</main>
-
-<script>
-// ─────────────────────────────────────
-//  DATA
-// ─────────────────────────────────────
-const COUNTRIES_STATES = {
-  "India": ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman & Nicobar Islands","Chandigarh","Dadra & Nagar Haveli","Daman & Diu","Delhi","Lakshadweep","Puducherry","Ladakh","Jammu & Kashmir"],
-  "United States": ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"],
-  "United Kingdom": ["England","Scotland","Wales","Northern Ireland"],
-  "Canada": ["Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"],
-  "Australia": ["Australian Capital Territory","New South Wales","Northern Territory","Queensland","South Australia","Tasmania","Victoria","Western Australia"],
-  "Germany": ["Baden-Württemberg","Bavaria","Berlin","Brandenburg","Bremen","Hamburg","Hesse","Lower Saxony","Mecklenburg-Vorpommern","North Rhine-Westphalia","Rhineland-Palatinate","Saarland","Saxony","Saxony-Anhalt","Schleswig-Holstein","Thuringia"],
-  "France": ["Île-de-France","Provence-Alpes-Côte d'Azur","Auvergne-Rhône-Alpes","Nouvelle-Aquitaine","Occitanie","Grand Est","Hauts-de-France","Normandie","Pays de la Loire","Bretagne","Bourgogne-Franche-Comté","Centre-Val de Loire","Corse"],
-  "Singapore": ["Central Region","East Region","North Region","North-East Region","West Region"],
-  "UAE": ["Abu Dhabi","Dubai","Sharjah","Ajman","Fujairah","Ras Al Khaimah","Umm Al Quwain"],
-  "Japan": ["Tokyo","Osaka","Kanagawa","Aichi","Saitama","Chiba","Hyogo","Hokkaido","Fukuoka","Shizuoka"],
-  "Other": ["N/A"]
-};
-
-const NATIONALITIES = ["Afghan","Albanian","Algerian","American","Andorran","Angolan","Argentine","Armenian","Australian","Austrian","Azerbaijani","Bahamian","Bangladeshi","Belgian","Bolivian","Bosnian","Brazilian","British","Bulgarian","Cambodian","Cameroonian","Canadian","Chilean","Chinese","Colombian","Congolese","Croatian","Cuban","Czech","Danish","Dutch","Egyptian","Emirati","Ethiopian","Finnish","French","Georgian","German","Ghanaian","Greek","Guatemalan","Haitian","Honduran","Hungarian","Indian","Indonesian","Iranian","Iraqi","Irish","Israeli","Italian","Jamaican","Japanese","Jordanian","Kazakh","Kenyan","Korean","Kuwaiti","Kyrgyz","Laotian","Latvian","Lebanese","Libyan","Lithuanian","Luxembourgish","Malaysian","Maldivian","Maltese","Mexican","Moldovan","Mongolian","Moroccan","Mozambican","Namibian","Nepalese","New Zealander","Nicaraguan","Nigerian","Norwegian","Omani","Pakistani","Palestinian","Panamanian","Paraguayan","Peruvian","Philippine","Polish","Portuguese","Qatari","Romanian","Russian","Rwandan","Saudi","Senegalese","Serbian","Singaporean","Slovak","Slovenian","Somali","South African","Spanish","Sri Lankan","Sudanese","Swedish","Swiss","Syrian","Taiwanese","Tajik","Tanzanian","Thai","Tunisian","Turkish","Ugandan","Ukrainian","Uruguayan","Uzbek","Venezuelan","Vietnamese","Yemeni","Zambian","Zimbabwean"];
-
-const SKILL_SUGGESTIONS_LIST = ["JavaScript","TypeScript","React","Vue.js","Angular","Node.js","Python","Java","C++","C#","Go","Rust","PHP","Ruby","Swift","Kotlin","Flutter","React Native","Django","FastAPI","Spring Boot","Express.js","PostgreSQL","MySQL","MongoDB","Redis","Docker","Kubernetes","AWS","Azure","GCP","CI/CD","Git","Linux","Figma","Adobe XD","Sketch","Photoshop","Illustrator","Machine Learning","TensorFlow","PyTorch","Data Analysis","Power BI","Tableau","Excel","SQL","REST APIs","GraphQL","Microservices","Agile","Scrum","Project Management","Communication","Leadership","Problem Solving","Team Building"];
-
-const PROFICIENCY_LABELS = ["","Beginner","Elementary","Intermediate","Advanced","Expert"];
-
-// ─────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────
-let skills = [];
-let uploadedFiles = {};
-let currentStep = 1;
-
-window.onload = () => {
-  // Populate countries
-  const countryEl = document.getElementById('country');
-  Object.keys(COUNTRIES_STATES).forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c;
-    countryEl.appendChild(o);
-  });
-  // Populate nationalities
-  const natEl = document.getElementById('nationality');
-  NATIONALITIES.forEach(n => {
-    const o = document.createElement('option'); o.value = n; o.textContent = n;
-    natEl.appendChild(o);
-  });
-  // Populate graduation years
-  const gy = document.getElementById('gradYear');
-  const yr = new Date().getFullYear();
-  for (let y = yr; y >= yr - 50; y--) {
-    const o = document.createElement('option'); o.value = y; o.textContent = y;
-    gy.appendChild(o);
-  }
-  // Set max DOB date (18+ years ago)
-  const maxDob = new Date(); maxDob.setFullYear(maxDob.getFullYear() - 18);
-  document.getElementById('dob').max = maxDob.toISOString().split('T')[0];
-
-  // Radio / checkbox behavior
-  setupClickableChoices('empTypeGroup', 'radio');
-  setupClickableChoices('workModeGroup', 'radio');
-  setupClickableChoices('langGroup', 'checkbox');
-  setupClickableChoices('declarationsGroup', 'checkbox');
-
-  // Skills input
-  const si = document.getElementById('skillInput');
-  si.addEventListener('keydown', skillKeyDown);
-  si.addEventListener('input', showSkillSuggestions);
-  si.addEventListener('blur', () => setTimeout(() => document.getElementById('skillSuggestions').classList.remove('open'), 180));
-};
-
-// ─────────────────────────────────────
-//  COUNTRY → STATE
-// ─────────────────────────────────────
-function populateStates() {
-  const country = document.getElementById('country').value;
-  const stateEl = document.getElementById('state');
-  stateEl.innerHTML = '<option value="">Select state</option>';
-  if (country && COUNTRIES_STATES[country]) {
-    COUNTRIES_STATES[country].forEach(s => {
-      const o = document.createElement('option'); o.value = s; o.textContent = s;
-      stateEl.appendChild(o);
-    });
-    stateEl.disabled = false;
-  } else { stateEl.disabled = true; }
-}
-
-// ─────────────────────────────────────
-//  RADIO / CHECKBOX CLICKABLE
-// ─────────────────────────────────────
-function setupClickableChoices(groupId, type) {
-  const group = document.getElementById(groupId);
-  if (!group) return;
-  group.querySelectorAll(type === 'radio' ? '.radio-item' : '.check-item').forEach(item => {
-    item.addEventListener('click', function() {
-      const inp = this.querySelector('input');
-      if (type === 'radio') {
-        group.querySelectorAll('.radio-item').forEach(i => i.classList.remove('selected'));
-        inp.checked = true;
-        this.classList.add('selected');
-      } else {
-        inp.checked = !inp.checked;
-        this.classList.toggle('selected', inp.checked);
-      }
-    });
-  });
-}
-
-// ─────────────────────────────────────
-//  SKILLS
-// ─────────────────────────────────────
-function skillKeyDown(e) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    addSkill(this.value.trim().replace(/,$/, ''));
-    this.value = '';
-    document.getElementById('skillSuggestions').classList.remove('open');
-  } else if (e.key === 'Backspace' && this.value === '' && skills.length) {
-    removeSkill(skills[skills.length - 1]);
-  }
-}
-
-function addSkill(val) {
-  val = val.trim();
-  if (!val || skills.includes(val) || skills.length >= 20) return;
-  skills.push(val);
-  renderSkillTags();
-}
-
-function removeSkill(val) {
-  skills = skills.filter(s => s !== val);
-  renderSkillTags();
-}
-
-function renderSkillTags() {
-  const wrap = document.getElementById('skillsWrap');
-  const input = document.getElementById('skillInput');
-  wrap.innerHTML = '';
-  skills.forEach(s => {
-    const tag = document.createElement('span');
-    tag.className = 'skill-tag';
-    tag.innerHTML = `${s}<button type="button" onclick="removeSkill('${s.replace(/'/g,"\\'")}')">×</button>`;
-    wrap.appendChild(tag);
-  });
-  wrap.appendChild(input);
-  input.focus();
-}
-
-function showSkillSuggestions() {
-  const val = this.value.toLowerCase();
-  const sug = document.getElementById('skillSuggestions');
-  if (!val) { sug.classList.remove('open'); return; }
-  const matches = SKILL_SUGGESTIONS_LIST.filter(s => s.toLowerCase().includes(val) && !skills.includes(s)).slice(0, 8);
-  if (!matches.length) { sug.classList.remove('open'); return; }
-  sug.innerHTML = matches.map(m => `<div class="skill-sug-item" onmousedown="addSkill('${m}');document.getElementById('skillInput').value='';document.getElementById('skillSuggestions').classList.remove('open')">${m}</div>`).join('');
-  sug.classList.add('open');
-}
-
-// ─────────────────────────────────────
-//  FILE UPLOAD
-// ─────────────────────────────────────
-function handleFileSelect(input, infoId, maxMB) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > maxMB * 1024 * 1024) {
-    showFileError(input.id, `File exceeds ${maxMB}MB limit`);
-    input.value = ''; return;
-  }
-  uploadedFiles[input.id] = file;
-  renderFileInfo(infoId, file);
-  clearErr('err-' + (input.id === 'resumeInput' ? 'resume' : ''));
-}
-
-function renderFileInfo(id, file) {
-  const el = document.getElementById(id);
-  el.innerHTML = `<div class="file-chosen">
-    <div class="file-chosen-icon">📎</div>
-    <div class="file-chosen-info">
-      <div class="file-chosen-name">${file.name}</div>
-      <div class="file-chosen-size">${(file.size/1024).toFixed(1)} KB · ${file.type || 'document'}</div>
-    </div>
-    <button class="file-chosen-remove" onclick="removeFile('${id}','${file.name.replace(/'/g,"\\'")}')">✕</button>
-  </div>`;
-}
-
-function removeFile(infoId, fileName) {
-  delete uploadedFiles[infoId === 'resumeInfo' ? 'resumeInput' : 'coverInput'];
-  document.getElementById(infoId).innerHTML = '';
-}
-
-function showFileError(inputId, msg) {
-  const errId = inputId === 'resumeInput' ? 'err-resume' : '';
-  if (errId) setErr(errId, msg);
-}
-
-function handleDragOver(e, dropId) { e.preventDefault(); document.getElementById(dropId).classList.add('drag'); }
-function handleDragLeave(e, dropId) { document.getElementById(dropId).classList.remove('drag'); }
-function handleDrop(e, inputId, dropId, infoId, maxMB) {
-  e.preventDefault();
-  document.getElementById(dropId).classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (!file) return;
-  const input = document.getElementById(inputId);
-  // Create a DataTransfer to assign file
-  const dt = new DataTransfer(); dt.items.add(file);
-  input.files = dt.files;
-  handleFileSelect(input, infoId, maxMB);
-}
-
-// ─────────────────────────────────────
-//  RANGE SLIDER
-// ─────────────────────────────────────
-function updateRange(el) {
-  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
-  el.style.setProperty('--val', pct + '%');
-  document.getElementById('proficiencyVal').textContent = PROFICIENCY_LABELS[el.value];
-}
-
-function updateChar(el, countId, max) {
-  document.getElementById(countId).textContent = el.value.length;
-}
-
-// ─────────────────────────────────────
-//  VALIDATION
-// ─────────────────────────────────────
-function setErr(id, msg) { const el = document.getElementById(id); if (el) el.textContent = msg; }
-function clearErr(id) { setErr(id, ''); }
-function markError(inputId, errId, msg) {
-  const el = document.getElementById(inputId);
-  if (el) el.classList.add('error');
-  setErr(errId, msg);
-  return false;
-}
-function clearField(inputId, errId) {
-  const el = document.getElementById(inputId);
-  if (el) el.classList.remove('error');
-  clearErr(errId);
-  return true;
-}
-
-function validateStep(step) {
-  let ok = true;
-  const v = (id, errId, msg, extraCheck) => {
-    const el = document.getElementById(id);
-    const val = el ? el.value.trim() : '';
-    if (!val || (extraCheck && !extraCheck(val))) {
-      markError(id, errId, msg || 'This field is required.'); ok = false;
-    } else { clearField(id, errId); }
-  };
-
-  if (step === 1) {
-    v('firstName','err-firstName','Enter your first name', x => x.length >= 2);
-    v('lastName','err-lastName','Enter your last name', x => x.length >= 2);
-    v('dob','err-dob','Enter a valid date of birth', x => { const d = new Date(x), cutoff = new Date(); cutoff.setFullYear(cutoff.getFullYear()-18); return d <= cutoff; });
-    v('gender','err-gender','Please select your gender');
-    v('nationality','err-nationality','Please select nationality');
-    v('email','err-email','Enter a valid email', x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
-    v('phone','err-phone','Enter a valid phone number', x => /^[\+\d\s\-\(\)]{7,20}$/.test(x));
-    // LinkedIn optional but if entered validate
-    const li = document.getElementById('linkedin').value.trim();
-    if (li && !/^https?:\/\/.+/.test(li)) { markError('linkedin','err-linkedin','Enter a valid URL starting with https://'); ok = false; } else clearField('linkedin','err-linkedin');
-    v('street','err-street','Enter your street address');
-    v('country','err-country','Select your country');
-    v('state','err-state','Select your state');
-    v('city','err-city','Enter your city');
-    v('pincode','err-pincode','Enter a valid PIN/ZIP code', x => /^[a-zA-Z0-9\s\-]{3,10}$/.test(x));
-  }
-
-  if (step === 2) {
-    v('degree','err-degree','Please select your highest degree');
-    v('field','err-field','Enter your field of study');
-    v('university','err-university','Enter your university/institution name');
-    v('gradYear','err-gradYear','Select your graduation year');
-    v('gpa','err-gpa','Enter your GPA or percentage');
-    v('gradeType','err-gradeType','Select your grading system');
-    const langs = [...document.querySelectorAll('#langGroup input:checked')];
-    if (!langs.length) { setErr('err-langs','Please select at least one language'); ok = false; } else clearErr('err-langs');
-  }
-
-  if (step === 3) {
-    v('jobTitle','err-jobTitle','Enter the job title you are applying for');
-    v('department','err-department','Select a department');
-    const empType = document.querySelector('#empTypeGroup input:checked');
-    if (!empType) { setErr('err-empType','Select employment type'); ok = false; } else clearErr('err-empType');
-    const workMode = document.querySelector('#workModeGroup input:checked');
-    if (!workMode) { setErr('err-workMode','Select work mode preference'); ok = false; } else clearErr('err-workMode');
-    v('experience','err-experience','Select your experience level');
-    v('noticePeriod','err-noticePeriod','Select your notice period');
-    v('expectedCTC','err-expectedCTC','Enter your expected CTC / salary');
-    if (!skills.length) { document.getElementById('skillsWrap').classList.add('error'); setErr('err-skills','Add at least one technical skill'); ok = false; } else { document.getElementById('skillsWrap').classList.remove('error'); clearErr('err-skills'); }
-    v('coverLetter','err-coverLetter','Please write a cover letter (minimum 50 characters)', x => x.length >= 50);
-  }
-
-  if (step === 4) {
-    if (!uploadedFiles['resumeInput']) { setErr('err-resume','Please upload your resume (PDF or DOC, max 2MB)'); ok = false; } else clearErr('err-resume');
-    v('ref1Name','err-ref1Name','Enter reference name');
-    v('ref1Email','err-ref1Email','Enter a valid reference email', x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
-    const decls = [...document.querySelectorAll('#declarationsGroup input:checked')];
-    if (decls.length < 3) { setErr('err-declarations','Please accept all three declarations to proceed'); ok = false; } else clearErr('err-declarations');
-    // Portfolio URL optional validation
-    const pf = document.getElementById('portfolio').value.trim();
-    if (pf && !/^https?:\/\/.+/.test(pf)) { markError('portfolio','err-portfolio','Enter a valid URL'); ok = false; } else clearField('portfolio','err-portfolio');
-  }
-
-  return ok;
-}
-
-// ─────────────────────────────────────
-//  NAVIGATION
-// ─────────────────────────────────────
-function nextStep(from) {
-  if (!validateStep(from)) {
-    // scroll to first error
-    const firstErr = document.querySelector('.err-msg:not(:empty)');
-    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // shake panel
-    document.getElementById('mainPanel').style.animation = 'none';
-    requestAnimationFrame(() => { document.getElementById('mainPanel').style.animation = ''; });
-    return;
-  }
-  if (from === 4) buildReview();
-  showStep(from + 1);
-}
-
-function prevStep(from) {
-  showStep(from - 1);
-}
-
-function showStep(n) {
-  document.getElementById('step' + currentStep).style.display = 'none';
-  currentStep = n;
-  const panel = document.getElementById('step' + n);
-  panel.style.display = 'block';
-  panel.style.animation = 'none';
-  requestAnimationFrame(() => panel.style.animation = '');
-  updateStepsBar(n);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function updateStepsBar(active) {
-  document.querySelectorAll('.step').forEach(s => {
-    const n = +s.dataset.step;
-    s.classList.remove('active','done');
-    if (n === active) s.classList.add('active');
-    else if (n < active) s.classList.add('done');
-  });
-}
-
-// ─────────────────────────────────────
-//  REVIEW BUILDER
-// ─────────────────────────────────────
-function gv(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-
-function buildReview() {
-  const langs = [...document.querySelectorAll('#langGroup input:checked')].map(i => i.value);
-  const empType = document.querySelector('#empTypeGroup input:checked')?.value || '—';
-  const workMode = document.querySelector('#workModeGroup input:checked')?.value || '—';
-  const resumeFile = uploadedFiles['resumeInput'];
-
-  const sections = [
-    {
-      title: 'Personal Information', step: 1,
-      items: [
-        { label: 'Full Name', value: gv('firstName') + ' ' + gv('lastName') },
-        { label: 'Date of Birth', value: gv('dob') },
-        { label: 'Gender', value: gv('gender') },
-        { label: 'Nationality', value: gv('nationality') },
-        { label: 'Email Address', value: gv('email') },
-        { label: 'Phone Number', value: gv('phone') },
-        { label: 'LinkedIn', value: gv('linkedin') || '—' },
-        { label: 'Address', value: [gv('street'), gv('city'), gv('state'), gv('country'), gv('pincode')].filter(Boolean).join(', ') },
-      ]
-    },
-    {
-      title: 'Educational Background', step: 2,
-      items: [
-        { label: 'Degree', value: gv('degree') },
-        { label: 'Field of Study', value: gv('field') },
-        { label: 'University', value: gv('university') },
-        { label: 'Year of Passing', value: gv('gradYear') },
-        { label: 'GPA / Percentage', value: gv('gpa') + ' (' + gv('gradeType') + ')' },
-        { label: 'Certifications', value: gv('certs') || '—' },
-        { label: 'Languages', value: langs.join(', ') || '—' },
-      ]
-    },
-    {
-      title: 'Experience & Skills', step: 3,
-      items: [
-        { label: 'Job Title Applied', value: gv('jobTitle') },
-        { label: 'Department', value: gv('department') },
-        { label: 'Employment Type', value: empType },
-        { label: 'Work Mode', value: workMode },
-        { label: 'Experience', value: gv('experience') },
-        { label: 'Current / Last Company', value: gv('currentCompany') || '—' },
-        { label: 'Notice Period', value: gv('noticePeriod') },
-        { label: 'Current CTC', value: gv('currentCTC') || '—' },
-        { label: 'Expected CTC', value: gv('expectedCTC') },
-      ]
-    },
-    {
-      title: 'Documents & References', step: 4,
-      items: [
-        { label: 'Resume', value: resumeFile ? resumeFile.name + ' (' + (resumeFile.size/1024).toFixed(1) + ' KB)' : '—' },
-        { label: 'Portfolio URL', value: gv('portfolio') || '—' },
-        { label: 'Reference 1', value: gv('ref1Name') + (gv('ref1Title') ? ', ' + gv('ref1Title') : '') },
-        { label: 'Reference Email', value: gv('ref1Email') },
-      ]
-    }
-  ];
-
-  let html = '';
-
-  // Skills section
-  const skillsHtml = skills.map(s => `<span class="review-tag">${s}</span>`).join('');
-  const coverLetterVal = gv('coverLetter');
-
-  sections.forEach(sec => {
-    html += `<div class="review-section">
-      <div class="review-section-title">
-        ${sec.title}
-        <button class="review-edit-btn" onclick="showStep(${sec.step})">✏️ Edit</button>
-      </div>
-      <div class="review-grid">`;
-    sec.items.forEach(item => {
-      html += `<div class="review-item">
-        <div class="review-item-label">${item.label}</div>
-        <div class="review-item-value">${item.value}</div>
-      </div>`;
-    });
-    html += `</div></div>`;
-  });
-
-  // Skills
-  html += `<div class="review-section">
-    <div class="review-section-title">Technical Skills <button class="review-edit-btn" onclick="showStep(3)">✏️ Edit</button></div>
-    <div class="review-tags">${skillsHtml}</div>
-  </div>`;
-
-  // Cover letter
-  html += `<div class="review-section">
-    <div class="review-section-title">Cover Letter <button class="review-edit-btn" onclick="showStep(3)">✏️ Edit</button></div>
-    <div style="font-size:14px;color:var(--ink);line-height:1.7;background:var(--paper);padding:18px;border-radius:8px;border:1px solid var(--border)">${coverLetterVal}</div>
-  </div>`;
-
-  document.getElementById('reviewContent').innerHTML = html;
-}
-
-// ─────────────────────────────────────
-//  FINAL SUBMIT
-// ─────────────────────────────────────
-function finalSubmit() {
-  const btn = document.querySelector('#step5 .btn-gold');
-  btn.disabled = true;
-  btn.innerHTML = '⏳ &nbsp; Submitting…';
-
-  setTimeout(() => {
-    document.getElementById('step5').style.display = 'none';
-    const sw = document.getElementById('successWrap');
-    sw.style.display = 'block';
-    updateStepsBar(6);
-    const id = 'APP-' + Date.now().toString(36).toUpperCase().slice(-8);
-    document.getElementById('appId').textContent = 'Application ID: ' + id;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 1800);
-}
-</script>
+<script src="script.js"></script>
 </body>
 </html>
