@@ -40,6 +40,7 @@ A basic personal portfolio website that includes:
 - Skills section
 - Projects section
 - Contact form
+- **demo link**: https://KSTRamyaSri.github.io/Kodbud-Internship/task1-portfolio
 
 ### Task 2 – Responsive Landing Page
 A landing page for a fictional product designed using:
@@ -47,9 +48,11 @@ A landing page for a fictional product designed using:
 - Responsive layout
 - Feature highlights
 - Testimonials section
+- **demo link** : https://KSTRamyaSri.github.io/Kodbud-Internship/task2-landingpage
 
 ### Task 3 – Google Homepage Clone
 Recreation of the Google homepage UI using **HTML and CSS** focusing on layout, spacing, and positioning.
+- **demo link** : https://KSTRamyaSri.github.io/Kodbud-Internship/task3-google-clone
 
 ### Task 4 – Form Validation
 A contact or job application form that includes:
@@ -78,20 +81,6 @@ A simple website created using **Bootstrap 5 components** such as:
 
 ### Task 8 – Webpage Animations
 Adding **CSS animations and transitions** to enhance user experience.
-
----
-
-## 🌐 Live Demo
-
-Each task can be accessed through GitHub Pages after deployment.
-
-Example:
-
-Task 1  
-https://KSTRamyaSri.github.io/Kodbud-Internship/task1-portfolio
-
-Task 2  
-https://KSTRamyaSri.github.io/Kodbud-Internship/task2-landingpage
 
 ---
 
